@@ -11,3 +11,4 @@ src/main/.DS_Store
 src/main/.DS_Store
 build.properties
 /src/main/webapp/WEB-INF/lib
+/src/main/webapp/WEB-INF/work
