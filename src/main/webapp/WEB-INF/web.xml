@@ -4,18 +4,16 @@
 
 	<display-name>Evento</display-name>
 
-	<classpath compile="false" id="/WEB-INF/classes"
-		source="/WEB-INF/classes" />
+	<classpath compile="false" id="/WEB-INF/classes" source="/WEB-INF/classes" />
 	<classpath library-dir="/WEB-INF/lib" />
 	<classpath library-dir="/WEB-INF/classes" />
 
-    <!-- 
 	<servlet>
 		<servlet-name>REST Service</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>com.admatic.services</param-value>
+			<param-value>com.oevento.services</param-value>
 		</init-param>
 		<init-param>
 			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
@@ -27,7 +25,6 @@
 		<servlet-name>REST Service</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
-	 -->
 	
 	<error-page>
 		<error-code>404</error-code>
