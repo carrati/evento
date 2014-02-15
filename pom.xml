@@ -5,7 +5,6 @@
 	<groupId>com.oevento</groupId>
 	<artifactId>o-evento</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
 
 	<name>o-evento</name>
 	<url>http://maven.apache.org</url>
@@ -93,9 +92,23 @@
 			<version>1.1</version>
 		</dependency>
 	</dependencies>
-
+	
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 	</properties>
+	
+	<build>
+		<finalName>evento</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<archiveClasses>true</archiveClasses>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<packaging>war</packaging>
 
 </project>

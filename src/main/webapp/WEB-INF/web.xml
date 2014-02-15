@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app id="admatic">
+
+	<display-name>Admatic</display-name>
+
+	<classpath compile="false" id="/WEB-INF/classes"
+		source="/WEB-INF/classes" />
+	<classpath library-dir="/WEB-INF/lib" />
+	<classpath library-dir="/WEB-INF/classes" />
+
+	<filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>com.admatic.servlet.filters.AuthFilter</filter-class>
+    </filter>
+    
+	<filter>
+        <filter-name>UrlRewriteFilter</filter-name>
+        <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+        <init-param>
+            <param-name>logLevel</param-name>
+            <param-value>WARN</param-value>
+        </init-param>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>UrlRewriteFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <servlet>
+		<servlet-name>GroupRule</servlet-name>
+		<servlet-class>com.admatic.servlet.GroupRuleServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>GroupRule</servlet-name>
+		<url-pattern>/grouprule/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>CompareServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.CompareServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>CompareServlet</servlet-name>
+		<url-pattern>/compare/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ApiServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.ApiServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ApiServlet</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>RedirectServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.RedirectServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>RedirectServlet</servlet-name>
+		<url-pattern>/redirect_link</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>TrackerServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.TrackerServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>TrackerServlet</servlet-name>
+		<url-pattern>/tracker/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>XmlServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.XmlServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>XmlServlet</servlet-name>
+		<url-pattern>/xml/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>KeywordsServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.KeywordsServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>KeywordsServlet</servlet-name>
+		<url-pattern>/keywords/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ReportsServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.ReportsServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ReportsServlet</servlet-name>
+		<url-pattern>/relatorio/*</url-pattern>
+		
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Login</servlet-name>
+		<servlet-class>com.admatic.servlet.LoginServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Login</servlet-name>
+		<url-pattern>/login/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>Login</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>UserServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.UserServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>UserServlet</servlet-name>
+		<url-pattern>/user/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>OffersServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.OffersServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>	
+	
+	<servlet-mapping>
+		<servlet-name>OffersServlet</servlet-name>
+		<url-pattern>/offer/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>AdminServlet</servlet-name>
+		<servlet-class>com.admatic.servlet.AdminServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>	
+	
+	<servlet-mapping>
+		<servlet-name>AdminServlet</servlet-name>
+		<url-pattern>/admin/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>REST Service</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-value>com.admatic.services</param-value>
+		</init-param>
+		<init-param>
+			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>REST Service</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404.jsp</location>
+	</error-page>
+
+	<!-- error-page>
+		<error-code>500</error-code>
+		<location>/500.jsp</location>
+		</error-page-->
+
+</web-app>
