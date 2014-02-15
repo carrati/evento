@@ -3,10 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.oevento</groupId>
-	<artifactId>o-evento</artifactId>
+	<artifactId>evento</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>o-evento</name>
+	<name>evento</name>
 	<url>http://maven.apache.org</url>
 
 	<dependencies>

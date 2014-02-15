@@ -19,22 +19,42 @@
 		<echo message="Source code compiled" />
 	</target>
 
-	<target name="installAndCopy">
-	    <exec dir="${evento.dir}" executable="cmd">
-	        <arg value="/c"/>
-	        <arg value="\apache-maven\bin\mvn.bat"/>
-	        <arg line="clean install" />
-	    </exec>
+	<target name="MavenInstallAndCopy">
+		<exec dir="${evento.dir}" executable="cmd">
+			<arg value="/c"/>
+			<arg value="\apache-maven\bin\mvn.bat"/>
+			<arg line="clean install" />
+		</exec>
 		<antcall target="copyToSite"/>
 		<!--
 			Criar variavel JAVA_HOME
 			Baixar Maven e colocar no diretorio /apache-maven
 		-->
 	</target>
+	
+	<target name="MavenClean">
+		<exec dir="${evento.dir}" executable="cmd">
+			<arg value="/c"/>
+			<arg value="\apache-maven\bin\mvn.bat"/>
+			<arg line="clean" />
+		</exec>
+	</target>
+	
+	<target name="MavenInstall">
+		<exec dir="${evento.dir}" executable="cmd">
+			<arg value="/c"/>
+			<arg value="\apache-maven\bin\mvn.bat"/>
+			<arg line="install" />
+		</exec>
+	</target>
 
 	<target name="copyTo">
+		<echo message="Deleting ${target.libs} content" />
+		<delete includeEmptyDirs="true">
+			<fileset dir="${target.libs}" includes="**/*" />
+		</delete>
 		<echo message="Copying to ${target.name} destination directory" />
-		<copy todir="${target.libs}" verbose="true">
+		<copy todir="${target.libs}" verbose="false" flatten="true" includeemptydirs="false">
 			<fileset dir="target/evento/WEB-INF/lib">
 				<include name="**" />
 			</fileset>
