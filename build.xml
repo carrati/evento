@@ -1,0 +1,41 @@
+<project name="Evento" default="compile">
+
+	<!-- set global properties for this build -->
+
+	<property file="build.properties" />
+
+	<target name="init">
+		<echo message="Creating folders..." />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.classes}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<echo message="Compiling source code..." />
+		<javac srcdir="${app.src}" destdir="${build.classes}" debug="on" encoding="iso-8859-1"
+			fork="true" memoryInitialSize="256m" memoryMaximumSize="512m">
+			<classpath refid="base.path" />
+		</javac>
+		<echo message="Source code compiled" />
+	</target>
+
+
+	<target name="copyTo">
+		<echo message="Copying to ${target.name} destination directory" />
+		<copy todir="${target.libs}" verbose="true">
+			<fileset dir="target/evento/WEB-INF/lib">
+				<include name="**" />
+			</fileset>
+		</copy>
+		<echo message="Copy complete" />
+	</target>
+
+	<target name="copyToSite">
+		<antcall target="copyTo">
+			<param name="target.name" value="Evento"/>
+			<param name="target.classes" value="${evento.classes}"/>
+			<param name="target.libs" value="${evento.libs}"/>
+		</antcall>
+	</target>
+
+</project>
