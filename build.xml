@@ -19,6 +19,18 @@
 		<echo message="Source code compiled" />
 	</target>
 
+	<target name="installAndCopy">
+	    <exec dir="${evento.dir}" executable="cmd">
+	        <arg value="/c"/>
+	        <arg value="\apache-maven\bin\mvn.bat"/>
+	        <arg line="clean install" />
+	    </exec>
+		<antcall target="copyToSite"/>
+		<!--
+			Criar variavel JAVA_HOME
+			Baixar Maven e colocar no diretorio /apache-maven
+		-->
+	</target>
 
 	<target name="copyTo">
 		<echo message="Copying to ${target.name} destination directory" />
