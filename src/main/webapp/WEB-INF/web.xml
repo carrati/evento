@@ -7,6 +7,10 @@
 	<classpath compile="false" id="/WEB-INF/classes" source="/WEB-INF/classes" />
 	<classpath library-dir="/WEB-INF/lib" />
 	<classpath library-dir="/WEB-INF/classes" />
+	
+	<welcome-file-list>
+	    <welcome-file>/page_wrapper.jsp</welcome-file>
+	</welcome-file-list> 
 
 	<servlet>
 		<servlet-name>REST Service</servlet-name>
