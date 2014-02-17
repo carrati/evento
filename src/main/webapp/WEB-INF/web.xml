@@ -11,13 +11,23 @@
 	<welcome-file-list>
 	    <welcome-file>/page_wrapper.jsp</welcome-file>
 	</welcome-file-list> 
+	
+	<servlet>
+		<servlet-name>FacebookConnect</servlet-name>
+		<servlet-class>com.evento.servlets.FacebookConnectServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>FacebookConnect</servlet-name>
+		<url-pattern>/fbConnect/*</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>REST Service</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>com.oevento.services</param-value>
+			<param-value>com.evento.services</param-value>
 		</init-param>
 		<init-param>
 			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
