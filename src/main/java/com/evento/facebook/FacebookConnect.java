@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -16,7 +17,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 public class FacebookConnect {
+	
+	private static final Cache<String, String> cache = CacheBuilder.newBuilder()
+		       .expireAfterAccess(30, TimeUnit.MINUTES)
+		       .build();
+            
+	public static final String ACCESS_TOKEN =
+			"CAACEdEose0cBABmvpqpEGSgNqdGaZBAA39wDAl7PE41EFhRRljkVJM7RUgO3ZB0Pg7CMBp2Lwt7RNlj4qsZCVW0ctBOP9mMR6DzAL00CWCZAyP9E1YvemadWH3W7ChK7QVXIffYqmgOZB2nDGtxDvioBFxZC8cuCZAZA5Xy5h7wW6agdgp9wDLGwmRTbgd0vgawZD";
 	
 	private static HttpClient httpClient = new HttpClient();
 	private static String[] permissionsValues = null;
@@ -39,7 +50,7 @@ public class FacebookConnect {
 	private static final String PARAM_SCOPE 		= "&scope=";
 	private static final String PARAM_CLIENT_SECRET = "&client_secret=";
 	private static final String PARAM_CODE 			= "&code=";
-	private static final String PARAM_ACCESS_TOKEN 	= "?access_token=";
+	private static final String PARAM_ACCESS_TOKEN 	= "access_token=";
 	
 	
 	private static final String accounts		= "accounts";
@@ -94,14 +105,15 @@ public class FacebookConnect {
 			"email",
 			"offline_access",
 			"user_birthday",
-			"status_update",
+			"user_relationships",
 			"user_events",
 			"user_likes",
 			"publish_actions",
 			"user_interests",
-			"friends_interests",
+			"user_friends",
 			"user_about_me",
 			"user_location",
+			"friends_events",
 			"read_friendlists"
 		};
 	}
@@ -222,14 +234,28 @@ public class FacebookConnect {
 			StringBuilder apiUrl = new StringBuilder();
 			apiUrl.append(URL_API);
 			if (profileId != null) {
-				apiUrl.append(getProfileId());
+				apiUrl.append(getProfileId()).append("/");
 			}
-			apiUrl.append(apiUrl.lastIndexOf("/")==apiUrl.length()-1 && module.isEmpty() ? "" : "/").append(module).append(PARAM_ACCESS_TOKEN).append(accessToken);
+			if (module != null && !"".equals(module.trim())) {
+				apiUrl.append(module).append("/");
+			}
+			
+			if (apiUrl.charAt(apiUrl.length()-1) == '/') 
+				apiUrl.delete(apiUrl.length()-1, apiUrl.length());
+				
+			apiUrl.append(apiUrl.indexOf("?") > -1 ? "&" : "?").append(PARAM_ACCESS_TOKEN).append(accessToken);
 
-			String json = makeGETRequest(apiUrl.toString());
-			if (json == null)
-				return null;
+			String json = cache.getIfPresent(apiUrl.toString());
+			
+			if (json == null) {
+				json = makeGETRequest(apiUrl.toString());
 
+				if (json != null) {
+					cache.put(apiUrl.toString(), json);
+				} else {
+					return null;
+				}
+			}
 			jsonObj = (JSONObject)jSonParser.parse(json);
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -551,8 +577,13 @@ public class FacebookConnect {
 		return fillMap(jsonObj);
 	}
 	
-	public Map<String, Object> get(String params) {
-		JSONObject jsonObj = getJson(params, null);
+	public Map<String, Object> get(String id, String params) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(id);
+		if (params != null) {
+			sb.append("?").append(params);
+		}
+		JSONObject jsonObj = getJson(sb.toString(), null);
 		return fillMap(jsonObj);
 	}
 	
@@ -596,9 +627,7 @@ public class FacebookConnect {
 	}
 	
 	public static void main(String[] args) {
-		String accessToken = "CAACEdEose0cBACeycxvvE4fxkf5FyFIusUJLxLKsJbVTmA0XZAwQRNS9NnzMNu86oCXFRsMo3VbnB0ZBscoNDMR758muOeHvC7llhQbZBi5N6ZCNZBlTatsElWnW8BoAYI5VD9Hl6uZC6AC46rTEaXZAfdhtmZAF7VFP8oPsevna9J1xCWqjPRyvHqDSn1XynisZD";
-		
-		FacebookConnect fb = new FacebookConnect(accessToken);
+		FacebookConnect fb = new FacebookConnect(ACCESS_TOKEN);
 		Map<String, Object> profile = fb.getProfile();
 
 		System.out.println(profile.get("name"));
@@ -613,7 +642,7 @@ public class FacebookConnect {
 			System.out.println(entry.getValue());
 			System.out.println("=====================================================");
 		}
-		System.out.println(fb.get("300260490122930?fields=cover,description,end_time,id,location,name,start_time,privacy,attending.fields(first_name,gender,interested_in,id,last_name)"));
+		System.out.println(fb.get("300260490122930", "fields=cover,description,end_time,id,location,name,start_time,privacy,attending.fields(first_name,gender,interested_in,id,last_name)"));
 		
 //		String message, picture, link, name, caption, description, source, place, tags;
 //		message = null;
