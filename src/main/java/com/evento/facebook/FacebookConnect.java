@@ -27,7 +27,7 @@ public class FacebookConnect {
 		       .build();
             
 	public static final String ACCESS_TOKEN =
-			"CAACEdEose0cBABmvpqpEGSgNqdGaZBAA39wDAl7PE41EFhRRljkVJM7RUgO3ZB0Pg7CMBp2Lwt7RNlj4qsZCVW0ctBOP9mMR6DzAL00CWCZAyP9E1YvemadWH3W7ChK7QVXIffYqmgOZB2nDGtxDvioBFxZC8cuCZAZA5Xy5h7wW6agdgp9wDLGwmRTbgd0vgawZD";
+			"CAACEdEose0cBAOnWWa2ZCfHgcDcZAOaqNou7j5oXQz00MZBGTMqMQuyp03KyHKmWzGvCn8Aw2rO6HMrltExNy8fCUaXZBD7vZBcZB4ipopg0zjHQXAujdXtke9VODys4IxwCNCZBextUoQfcenn2hvZAaN2PlUr8Icmgs44I9fIzYAffZB4bfVKkkcUXoBxy5pRsZD";
 	
 	private static HttpClient httpClient = new HttpClient();
 	private static String[] permissionsValues = null;
@@ -119,7 +119,7 @@ public class FacebookConnect {
 	}
 	
 	public FacebookConnect(String accessToken) {
-//		access_token=USER_ACESS_TOKEN&expires=NUMBER_OF_SECONDS_UNTIL_TOKEN_EXPIRES
+		//		access_token=USER_ACESS_TOKEN&expires=NUMBER_OF_SECONDS_UNTIL_TOKEN_EXPIRES
 		String[] tmp = accessToken.split("&");
 		this.accessToken = tmp[0].replace("access_token=", "");
 		if (tmp.length > 1)
@@ -244,7 +244,7 @@ public class FacebookConnect {
 				apiUrl.delete(apiUrl.length()-1, apiUrl.length());
 				
 			apiUrl.append(apiUrl.indexOf("?") > -1 ? "&" : "?").append(PARAM_ACCESS_TOKEN).append(accessToken);
-
+			
 			String json = cache.getIfPresent(apiUrl.toString());
 			
 			if (json == null) {
