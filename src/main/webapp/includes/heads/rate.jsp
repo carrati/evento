@@ -1,1 +1,1 @@
-<title>VaiBombar - Avaliar</title>
+<title>VaiBombar - Pesquisar Eventos</title>

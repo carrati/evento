@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%
-	String pageName = "login";
+	String pageName = (String)request.getParameter("page");
+	pageName = (pageName!= null && !"".equals(pageName)) ? pageName : "login";
 	pageContext.setAttribute("pageName", pageName);
 %>
 <!DOCTYPE html>

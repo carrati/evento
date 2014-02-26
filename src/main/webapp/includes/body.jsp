@@ -1,16 +1,19 @@
 <%
-	pageContext.setAttribute("page",
-		"pages/" + request.getParameter("pageName") + ".jsp");
+	String pageName = request.getParameter("pageName");
+	pageContext.setAttribute("pageName", pageName);
+	pageContext.setAttribute("pagePath", "pages/" + pageName + ".jsp");
 %>
 
 <div class="site-wrapper">
 	<div class="site-wrapper-inner">
 		<div class="cover-container">
 		
-			<jsp:include page="header.jsp"></jsp:include>
+			<jsp:include page="header.jsp">
+				<jsp:param value="${pageName}" name="pageName"/>
+			</jsp:include>
 
 			<div class="page_body">
-				<jsp:include page="${page}"></jsp:include>
+				<jsp:include page="${pagePath}"></jsp:include>
 			</div>
 
 			<jsp:include page="footer.jsp"></jsp:include>

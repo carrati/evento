@@ -1,11 +1,18 @@
+<%
+	String active = "class=\"active\"",
+			pageName = request.getParameter("pageName");
+
+%>
 <header class="masthead clearfix">
 	<div class="inner">
 		<h3 class="masthead-brand">VAIBOMBAR</h3>
-		<ul class="nav masthead-nav">
-			<li class="active"><a href="#">Home</a></li>
-			<li><a href="#">Features</a></li>
-			<li><a href="#">Contact</a></li>
-		</ul>
+		<% if ( pageName == null || !"login".equals(pageName) ) {%>
+			<ul class="nav masthead-nav">
+				<li <%=pageName != null && "dashboard".equals(pageName) ? active : ""%>><a href="/?page=dashboard">Home</a></li>
+				<li <%=pageName != null && "rate".equals(pageName) ? active : ""%>><a href="/?page=rate">Avaliar</a></li>
+				<li <%=pageName != null && "events".equals(pageName) ? active : ""%>><a href="/?page=events">Eventos</a></li>
+			</ul>
+		<% } %>
 	</div>
 </header>
     
