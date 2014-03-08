@@ -1,6 +1,10 @@
 package com.evento.db;
 
+import com.evento.db.impl.mysql.MysqlEventDAO;
+import com.evento.db.impl.mysql.MysqlEventUserDAO;
 import com.evento.db.impl.mysql.MysqlUserDAO;
+import com.evento.db.interfaces.EventDAO;
+import com.evento.db.interfaces.EventUserDAO;
 import com.evento.db.interfaces.UserDAO;
 
 public class DAOFactory {
@@ -21,4 +25,11 @@ public class DAOFactory {
 		return MysqlUserDAO.getInstance();
 	}
 	
+	public EventDAO getEventDAO() {
+		return MysqlEventDAO.getInstance();
+	}
+	
+	public EventUserDAO getEventUserDAO() {
+		return MysqlEventUserDAO.getInstance();
+	}
 }
