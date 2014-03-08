@@ -1,6 +1,7 @@
 package com.evento.servlets;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -10,8 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.evento.bean.User;
+import com.evento.db.DAOFactory;
 import com.evento.facebook.FacebookConnect;
 import com.evento.utils.Cookies;
+import com.evento.utils.DateUtils;
 
 public class FacebookConnectServlet extends HttpServlet {
 
@@ -57,13 +60,21 @@ public class FacebookConnectServlet extends HttpServlet {
 				user.setName((String)fb.getProfile().get("name"));
 				user.setFirstName((String)fb.getProfile().get("first_name"));
 				user.setLastName((String)fb.getProfile().get("last_name"));
-
+				user.setUsername((String)fb.getProfile().get("username"));
 				user.setLocation((String) ((Map<String, Object>)fb.getProfile().get("location")).get("name") );
 				user.setLocationId(Long.parseLong((String) ((Map<String, Object>)fb.getProfile().get("location")).get("id")) );
-
+				user.setEmail((String)fb.getProfile().get("email"));
 				user.setId(Long.parseLong((String)fb.getProfile().get("id")));
 				user.setGender((String)fb.getProfile().get("gender"));
-				//			user = UserBusiness.getInstance().loginWithFacebook(fb, request);
+				user.setLink((String)fb.getProfile().get("link"));
+				user.setBirthday(DateUtils.parseDate((String)fb.getProfile().get("birthday"), "MM/dd/yyyy"));
+				
+				user.setLastLoginIP(request.getRemoteAddr());
+				
+				user.setLastLoginDate(new Date());
+
+				DAOFactory.getInstance().getUserDAO().insert(user);
+				
 			} catch (Exception e) {
 				
 			}

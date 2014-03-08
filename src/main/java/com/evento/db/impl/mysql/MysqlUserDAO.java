@@ -20,10 +20,12 @@ public class MysqlUserDAO implements UserDAO {
 	
 	private static MysqlUserDAO instance;
 
-	private static String SELECT_STATEMENT = "select id, username, password, created_at, updated_at, name, email from user ";
-
-	private static String INSERT_STATEMENT = "insert into user (username, password, created_at, updated_at, name, email)" +
-			" values (?, ?, now(), now(), ?, ? ) ON DUPLICATE KEY";
+	private static String SELECT_STATEMENT = "select id, name, first_name, last_name, link, gender, username, email, location, location_id, birthday from user ";
+	
+	private static String INSERT_STATEMENT = "insert into user (id,	name, first_name, last_name, link, gender, username, email,	last_login_ip, location, location_id, birthday, last_login_date, created_at, updated_at) " +
+			" values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now(),now() ) "
+			+ "ON DUPLICATE KEY UPDATE name=values(name), first_name=values(first_name), last_name=values(last_name), link=values(link), gender=values(gender), username=values(username), email=values(email),	"
+			+ "last_login_ip=values(last_login_ip), location=values(location), location_id=values(location_id), birthday=values(birthday), last_login_date=now(), updated_at=now()";
 	
 			
 	private MysqlUserDAO() {
@@ -49,19 +51,6 @@ public class MysqlUserDAO implements UserDAO {
 	public void insert(User t) {
 		Connection conn = null;
 		PreparedStatement st = null;
-//		'id', 'bigint(20) unsigned', 'NO', 'PRI', '', ''
-//		'name', 'varchar(500)', 'NO', '', '', ''
-//		'first_name', 'varchar(500)', 'NO', '', '', ''
-//		'last_name', 'varchar(500)', 'NO', '', '', ''
-//		'link', 'varchar(500)', 'NO', '', '', ''
-//		'gender', 'varchar(500)', 'NO', '', '', ''
-//		'username', 'varchar(500)', 'NO', '', '', ''
-//		'email', 'varchar(500)', 'NO', '', '', ''
-//		'last_login_ip', 'varchar(100)', 'NO', '', '', ''
-//		'location', 'varchar(500)', 'NO', '', '', ''
-//		'location_id', 'bigint(20) unsigned', 'NO', '', '', ''
-//		'birthday', 'date', 'NO', '', '', ''
-//		'last_login_date', 'datetime', 'NO', '', '', ''
 		
 		try {
 			conn = ConnectionManager.getConnection();
@@ -81,7 +70,6 @@ public class MysqlUserDAO implements UserDAO {
 			st.setString(++pos, t.getLocation());
 			st.setLong(++pos, t.getLocationId());
 			st.setDate(++pos, new java.sql.Date(t.getBirthday().getTime()));
-			st.setDate(++pos, new java.sql.Date(t.getLastLoginDate().getTime()));
 			st.execute();
 			
 		} catch (Exception e) {
@@ -180,15 +168,17 @@ public class MysqlUserDAO implements UserDAO {
 				
 				User user = new User();
 				user.setId(rs.getInt(++pos));
-				user.setUsername(rs.getString(++pos));
-//				user.setPassword(rs.getString(++pos));
-//				user.setCreated(new Date(rs.getTimestamp(++pos).getTime()));
-//				try {
-//					user.setUpdated(new Date(rs.getTimestamp(++pos).getTime()));
-//				} catch (Exception e) {
-//				}
 				user.setName(rs.getString(++pos));
+				user.setFirstName(rs.getString(++pos));
+				user.setlastName(rs.getString(++pos));
+				user.setLink(rs.getString(++pos));
+				user.setGender(rs.getString(++pos));
+				user.setUsername(rs.getString(++pos));
 				user.setEmail(rs.getString(++pos));
+				user.setLocation(rs.getString(++pos));
+				user.setLocationId(rs.getLong(++pos));
+				user.setBirthday(rs.getDate(++pos));
+				
 				list.add(user);
 			}
 			

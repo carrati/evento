@@ -27,7 +27,7 @@ public class FacebookConnect {
 		       .build();
             
 	public static final String ACCESS_TOKEN =
-			"CAACEdEose0cBAOnWWa2ZCfHgcDcZAOaqNou7j5oXQz00MZBGTMqMQuyp03KyHKmWzGvCn8Aw2rO6HMrltExNy8fCUaXZBD7vZBcZB4ipopg0zjHQXAujdXtke9VODys4IxwCNCZBextUoQfcenn2hvZAaN2PlUr8Icmgs44I9fIzYAffZB4bfVKkkcUXoBxy5pRsZD";
+			"CAAJDpChIsfwBAA6ZA2c5QoxTWs6cDmVnoA8m7lvzM18kpncdbfTGLVCjHOJEZAZCZBX3dd8JtZCFNC2KITMmZBuB6GTD15Jdv9EZCNa6QOuG1rGk8tOh5pGpkUeLNvD39byyjHWGeZBVMexTNQcgFqZCwRbe1ldZBeFzHPHJqIYS6jQJSEU9SBf1Wk";
 	
 	private static HttpClient httpClient = new HttpClient();
 	private static String[] permissionsValues = null;
