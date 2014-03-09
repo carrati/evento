@@ -6,6 +6,9 @@ public class EventUser {
 	private long userId;
 	private String status;
 	
+	public static final String STATUS_INVITED = "invited";
+	public static final String STATUS_ATTENDING = "attending";
+	
 	private User user;
 	private Event event;
 	
