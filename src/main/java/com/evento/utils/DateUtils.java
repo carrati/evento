@@ -38,9 +38,14 @@ public class DateUtils {
 		return DF.parse(strDate);
 	}
 	
-	public static Date parseDate(String strDate, String pattern) throws ParseException{
+	public static Date parseDate(String strDate, String pattern) {
 		SimpleDateFormat formatter = new SimpleDateFormat(pattern); 
-		return (Date)formatter.parse(strDate); 
+		try {
+			return (Date)formatter.parse(strDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public static Date parseDate(String strDate, String pattern, Locale locale) throws ParseException{

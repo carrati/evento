@@ -18,7 +18,7 @@ public interface BasicDAO<T> {
 	
 	public List<T> listBy(String query, Map<String, Object> conditions, LinkedHashMap<String, String> orders);
 	
-	public T findById(int id);
+	public T findById(long id);
 	
 	public T findBy(Map<String, Object> values);
 	

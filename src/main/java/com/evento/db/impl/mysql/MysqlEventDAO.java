@@ -13,43 +13,41 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.evento.bean.User;
+import com.evento.bean.Event;
 import com.evento.db.ConnectionManager;
-import com.evento.db.interfaces.UserDAO;
+import com.evento.db.interfaces.EventDAO;
 
-public class MysqlUserDAO implements UserDAO {
+public class MysqlEventDAO implements EventDAO {
 	
-	private static MysqlUserDAO instance;
+	private static MysqlEventDAO instance;
 
-	private static String SELECT_STATEMENT = "select id, name, first_name, last_name, link, gender, username, email, location, location_id, birthday from user ";
+	private static String SELECT_STATEMENT = "select id, name, owner, description, cover, location, privacy, start_time, end_time from event ";
 	
-	private static String INSERT_STATEMENT = "insert into user (id,	name, first_name, last_name, link, gender, username, email,	last_login_ip, location, location_id, birthday, last_login_date, created_at, updated_at) " +
-			" values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now(),now() ) "
-			+ "ON DUPLICATE KEY UPDATE name=values(name), first_name=values(first_name), last_name=values(last_name), link=values(link), gender=values(gender), username=values(username), email=values(email),	"
-			+ "last_login_ip=values(last_login_ip), location=values(location), location_id=values(location_id), birthday=values(birthday), last_login_date=now(), updated_at=now()";
+	
+//	id, name, owner, description, cover, location, privacy, start_time, end_time, created_at, updated_at
+	
+	private static String INSERT_STATEMENT = "insert into event (id, name, owner, description, cover, location, privacy, start_time, end_time, created_at, updated_at) " +
+			" values (?, ?, ?, ?, ?, ?, ?, ?, ?, now(),now() ) "
+			+ "ON DUPLICATE KEY UPDATE name=values(name), owner=values(owner), description=values(description), cover=values(cover), location=values(location), privacy=values(privacy), start_time=values(start_time),	"
+			+ "end_time=values(end_time), updated_at=now()";
 	
 			
-	private MysqlUserDAO() {
+	private MysqlEventDAO() {
 	}
 	
-	public static MysqlUserDAO getInstance() {
+	public static MysqlEventDAO getInstance() {
 		if (instance == null) {
-			instance = new MysqlUserDAO();
+			instance = new MysqlEventDAO();
 		}
 		
 		return instance;
 	}
 
-	public User findById(long id) {
+	public Event findById(long id) {
 		return findBy(Collections.<String, Object>singletonMap("id", id));
 	}
 	
-	public List<User> listByAccountId(int accountId) {
-		
-		return listBy(SELECT_STATEMENT, Collections.<String, Object>singletonMap("account_id", accountId), null);
-	}
-
-	public void insert(User t) {
+	public void insert(Event t) {
 		Connection conn = null;
 		PreparedStatement st = null;
 		
@@ -59,18 +57,24 @@ public class MysqlUserDAO implements UserDAO {
 			int pos = 0;
 
 			st = conn.prepareStatement(INSERT_STATEMENT);
+			
 			st.setLong(++pos, t.getId());
 			st.setString(++pos, t.getName());
-			st.setString(++pos, t.getFirstName());
-			st.setString(++pos, t.getLastName());
-			st.setString(++pos, t.getLink());
-			st.setString(++pos, t.getGender());
-			st.setString(++pos, t.getUsername());
-			st.setString(++pos, t.getEmail());
-			st.setString(++pos, t.getLastLoginIP());
+			st.setLong(++pos, t.getOwner());
+			st.setString(++pos, t.getDescription());
+			st.setString(++pos, t.getCover());
 			st.setString(++pos, t.getLocation());
-			st.setLong(++pos, t.getLocationId());
-			st.setDate(++pos, new java.sql.Date(t.getBirthday().getTime()));
+			st.setString(++pos, t.getPrivacy());
+			if (t.getStartTime() != null) {
+				st.setTimestamp(++pos, new Timestamp(((Date)  t.getStartTime()).getTime()));
+			} else {
+				st.setNull(++pos, Types.NULL);
+			}
+			if (t.getEndTime() != null) {
+				st.setTimestamp(++pos, new Timestamp(((Date)  t.getEndTime()).getTime()));
+			} else {
+				st.setNull(++pos, Types.NULL);
+			}
 			st.execute();
 			
 		} catch (Exception e) {
@@ -86,7 +90,7 @@ public class MysqlUserDAO implements UserDAO {
 
 	}
 
-	public void insert(List<User> list) {
+	public void insert(List<Event> list) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
@@ -95,24 +99,26 @@ public class MysqlUserDAO implements UserDAO {
 			conn.setAutoCommit(true);
 
 			pstmt = conn.prepareStatement(INSERT_STATEMENT);
-
+			
 			for (int i = 0; list != null && i < list.size(); i++) {
-				User t = list.get(i);
+				Event t = list.get(i);
+				
 				int pos = 0;
 				
 				pstmt.setLong(++pos, t.getId());
 				pstmt.setString(++pos, t.getName());
-				pstmt.setString(++pos, t.getFirstName());
-				pstmt.setString(++pos, t.getLastName());
-				pstmt.setString(++pos, t.getLink());
-				pstmt.setString(++pos, t.getGender());
-				pstmt.setString(++pos, t.getUsername());
-				pstmt.setString(++pos, t.getEmail());
-				pstmt.setString(++pos, t.getLastLoginIP());
+				pstmt.setLong(++pos, t.getOwner());
+				pstmt.setString(++pos, t.getDescription());
+				pstmt.setString(++pos, t.getCover());
 				pstmt.setString(++pos, t.getLocation());
-				pstmt.setLong(++pos, t.getLocationId());
-				if (t.getBirthday() != null) {
-					pstmt.setDate(++pos, new java.sql.Date(t.getBirthday().getTime()));
+				pstmt.setString(++pos, t.getPrivacy());
+				if (t.getStartTime() != null) {
+					pstmt.setTimestamp(++pos, new Timestamp(((Date)  t.getStartTime()).getTime()));
+				} else {
+					pstmt.setNull(++pos, Types.NULL);
+				}
+				if (t.getEndTime() != null) {
+					pstmt.setTimestamp(++pos, new Timestamp(((Date)  t.getEndTime()).getTime()));
 				} else {
 					pstmt.setNull(++pos, Types.NULL);
 				}
@@ -133,31 +139,31 @@ public class MysqlUserDAO implements UserDAO {
 		}
 	}
 
-	public List<User> listAll() {
+	public List<Event> listAll() {
 		
 		LinkedHashMap<String, String> orders = new LinkedHashMap<String, String>();
 		orders.put("id", "asc");
 		
-		List<User> users = listBy(SELECT_STATEMENT, null, orders);
+		List<Event> users = listBy(SELECT_STATEMENT, null, orders);
 		
 		return users;
 	}
 
-	public User findByName(String name) {
+	public Event findByName(String name) {
 		return findBy(Collections.<String, Object>singletonMap("username", name));
 	}
 
-	public User findBy(Map<String, Object> values) {
-		List<User> list = listBy(SELECT_STATEMENT, values, null);
+	public Event findBy(Map<String, Object> values) {
+		List<Event> list = listBy(SELECT_STATEMENT, values, null);
 		return list != null && !list.isEmpty() ? list.get(0) : null;
 	}
 	
-	public List<User> listBy(Map<String, Object> conditions, LinkedHashMap<String, String> orders) {
+	public List<Event> listBy(Map<String, Object> conditions, LinkedHashMap<String, String> orders) {
 		return listBy(SELECT_STATEMENT, conditions, orders);
 	}
 	
-	public List<User> listBy(String query, Map<String, Object> conditions, LinkedHashMap<String, String> orders) {
-		List<User> list = new ArrayList<User>();
+	public List<Event> listBy(String query, Map<String, Object> conditions, LinkedHashMap<String, String> orders) {
+		List<Event> list = new ArrayList<Event>();
 		
 		Connection conn = null;
 		PreparedStatement st = null;
@@ -210,18 +216,16 @@ public class MysqlUserDAO implements UserDAO {
 			while (rs.next()) {
 				int pos = 0;
 				
-				User user = new User();
+				Event user = new Event();
 				user.setId(rs.getInt(++pos));
 				user.setName(rs.getString(++pos));
-				user.setFirstName(rs.getString(++pos));
-				user.setlastName(rs.getString(++pos));
-				user.setLink(rs.getString(++pos));
-				user.setGender(rs.getString(++pos));
-				user.setUsername(rs.getString(++pos));
-				user.setEmail(rs.getString(++pos));
+				user.setOwner(rs.getLong(++pos));
+				user.setDescription(rs.getString(++pos));
+				user.setCover(rs.getString(++pos));
 				user.setLocation(rs.getString(++pos));
-				user.setLocationId(rs.getLong(++pos));
-				user.setBirthday(rs.getDate(++pos));
+				user.setPrivacy(rs.getString(++pos));
+				user.setStartTime(rs.getTimestamp(++pos));
+				user.setEndTime(rs.getTimestamp(++pos));
 				
 				list.add(user);
 			}
@@ -241,8 +245,7 @@ public class MysqlUserDAO implements UserDAO {
 		return list;
 	}
 
-	public void update(User t) {
+	public void update(Event t) {
 		// TODO Auto-generated method stub
-		
 	}
 }

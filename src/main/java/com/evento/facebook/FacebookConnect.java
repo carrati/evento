@@ -27,7 +27,7 @@ public class FacebookConnect {
 		       .build();
             
 	public static final String ACCESS_TOKEN =
-			"CAACEdEose0cBAOnWWa2ZCfHgcDcZAOaqNou7j5oXQz00MZBGTMqMQuyp03KyHKmWzGvCn8Aw2rO6HMrltExNy8fCUaXZBD7vZBcZB4ipopg0zjHQXAujdXtke9VODys4IxwCNCZBextUoQfcenn2hvZAaN2PlUr8Icmgs44I9fIzYAffZB4bfVKkkcUXoBxy5pRsZD";
+			"CAAJDpChIsfwBAJKKhlZAE4G5co2ZCz4Jwjgpjantgj14JZB0JShmm40wkOM7T2TlhBKQDa6Uv1b6J4GxKhfJOlQP94BJvnyaBAbZBnqFz7oHyn60ABySK13Em60cx7iK1DWl3r3eIvQZAWrkWlyu3q0CjKpRMX44dkWCt4G6w2Wwzp4oYvw0t";
 	
 	private static HttpClient httpClient = new HttpClient();
 	private static String[] permissionsValues = null;
@@ -229,29 +229,34 @@ public class FacebookConnect {
 	}
 	
 	private JSONObject getJson(String module, String profileId) {
+		StringBuilder apiUrl = new StringBuilder();
+		apiUrl.append(URL_API);
+		if (profileId != null) {
+			apiUrl.append(getProfileId()).append("/");
+		}
+		if (module != null && !"".equals(module.trim())) {
+			apiUrl.append(module).append("/");
+		}
+
+		if (apiUrl.charAt(apiUrl.length()-1) == '/') 
+			apiUrl.delete(apiUrl.length()-1, apiUrl.length());
+
+		apiUrl.append(apiUrl.indexOf("?") > -1 ? "&" : "?").append(PARAM_ACCESS_TOKEN).append(accessToken);
+
+		return returnJson(apiUrl.toString());
+	}
+	
+	private JSONObject returnJson(String url) {
 		JSONObject jsonObj = null;
 		try {
-			StringBuilder apiUrl = new StringBuilder();
-			apiUrl.append(URL_API);
-			if (profileId != null) {
-				apiUrl.append(getProfileId()).append("/");
-			}
-			if (module != null && !"".equals(module.trim())) {
-				apiUrl.append(module).append("/");
-			}
 			
-			if (apiUrl.charAt(apiUrl.length()-1) == '/') 
-				apiUrl.delete(apiUrl.length()-1, apiUrl.length());
-				
-			apiUrl.append(apiUrl.indexOf("?") > -1 ? "&" : "?").append(PARAM_ACCESS_TOKEN).append(accessToken);
-			
-			String json = cache.getIfPresent(apiUrl.toString());
+			String json = cache.getIfPresent(url);
 			
 			if (json == null) {
-				json = makeGETRequest(apiUrl.toString());
+				json = makeGETRequest(url);
 
 				if (json != null) {
-					cache.put(apiUrl.toString(), json);
+					cache.put(url, json);
 				} else {
 					return null;
 				}
@@ -394,9 +399,18 @@ public class FacebookConnect {
 	}
 	
 //	events
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> getEvents() {
 		JSONObject jsonObj = getJson(events);
-		return fillMap(jsonObj);
+		Map<String, Object> map = fillMap(jsonObj);
+		
+		Map<String, Object> events = new HashMap<String, Object>();
+		for (Map.Entry<String, Object> entry : ((Map<String, Object>)map.get("data")).entrySet()) {
+			Map<String, Object> event = (Map<String, Object>)entry.getValue();
+			events.put((String)event.get("id"), event);
+		}
+		
+		return events;
 	}
 	
 //	family
@@ -584,6 +598,11 @@ public class FacebookConnect {
 			sb.append("?").append(params);
 		}
 		JSONObject jsonObj = getJson(sb.toString(), null);
+		return fillMap(jsonObj);
+	}
+	
+	public Map<String, Object> get(String url) {
+		JSONObject jsonObj = returnJson(url);
 		return fillMap(jsonObj);
 	}
 	

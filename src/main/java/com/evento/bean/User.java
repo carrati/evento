@@ -118,7 +118,7 @@ public class User {
 	}
 
 	public String getGender() {
-		return gender;
+		return gender != null ? gender : "";
 	}
 
 	public void setGender(String gender) {
