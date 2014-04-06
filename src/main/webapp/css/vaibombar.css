@@ -9,14 +9,17 @@
 	font-style: normal;
 }
 
+/* bootstrap template */
 .masthead-brand {
 	font-family: Impact, Helvetica;
 	font-size:53px;
 	margin-top:0;
 }
 
-img {
-	max-width:100%
+@media (min-width: 900px) {
+	.site-wrapper-inner {
+		padding-top:60px;
+	}
 }
 @media (max-width: 900px) {
 	header>.inner {
@@ -25,6 +28,11 @@ img {
 	.page_body>.inner {
 		padding-top:0;
 	}
+}
+
+/* images */
+img {
+	max-width:100%
 }
 
 /* ### LOGIN ### */
@@ -50,7 +58,7 @@ img {
 	height: 100%;
 	background-color: #333;
 	opacity: 0.5;
-	border-radius:18px	
+	border-radius:18px;
 }
 
 .login .cover p{
@@ -63,6 +71,104 @@ img {
 	border-radius: 6px;
 }
 
+/* ### EVENTS LIST ### */
+
+.events a {
+	display:inline-block;
+	padding:5px 5px 5px 0;
+}
+
+.events .next_events {
+	text-align:left;
+}
+.events .next_events li>a {
+	display:block;
+	background-color:#333;
+	margin-bottom:1em;
+	padding-left:1em;
+	border:1px solid #222;
+}
+
+.events .next_events .icon_placeholder {
+	float:right;
+}
+.events .next_events .glyphicon-calendar {
+	font-size:4.2em;
+	color:#DDD;
+	line-height:1.2em;
+}
+.events .next_events h1 {
+	margin-bottom:0;
+}
+.events .next_events .obs {
+	margin-top:-5px;
+}
+.events .next_events .options {
+	font-size:.85em;
+	padding-bottom:8px;
+}
+.events .next_events .options a {
+	color:#CCC;
+}
+.events .next_events .options .active {
+	color:#FFF;
+	text-decoration:underline;
+}
+.events .next_events li img {
+	width:2em;
+	margin-right:8px;
+}
+.events .next_events .glyphicon-ok {
+	color: #FFF;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	background-color:#3F3;
+	overflow:hidden;
+	font-size:.8em;
+	padding:2px;
+	position:relative;
+	top:2px;
+	left:4px;
+}
+
+.events .next_events .rating_wrapper {
+	display:block;
+	font-size:.8em;
+}
+.events .next_events a:hover .rating_wrapper * {
+	text-decoration:none !important;
+}
+.events .next_events .rating:before {
+	content: "Avaliado:";
+}
+.events .next_events .total_rating {
+	font-weight:bold;
+	margin-left:1.2em;
+}
+.events .next_events .total_rating:before {
+	content: "Avaliação total: ";
+	color:#FFF;
+}
+.events .next_events .none {
+	color:#F33;
+}
+.events .next_events .few {
+	color:#FA3;
+}
+.events .next_events .many {
+	color:#FF0;
+}
+.events .next_events .all {
+	color:#3F3;
+}
+
+.events .all_events {
+	padding-top:20px;
+}
+.events .all_events a{
+	text-decoration:underline;
+}
 
 /* ### RATE ### */
 
