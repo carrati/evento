@@ -8,58 +8,55 @@ import com.evento.bean.Event;
 import com.evento.bean.EventUser;
 import com.evento.bean.User;
 import com.evento.db.DAOFactory;
+import com.evento.loaders.LoaderFactory;
+import com.evento.loaders.impl.EventLoader.EventKey;
 import com.evento.utils.DateUtils;
 
 public class EventHandler {
 	
-	//pegar de cara so que vier, depois o processo em background fazer paginacao e pegar todo mundo
-
-	private static final String EVENT_PARAMS = "fields=cover,description,end_time,id,location,name,start_time,privacy,owner,"
-			+ "attending.fields(first_name,gender,interested_in,id,last_name),invited.fields(first_name,gender,id,last_name)&limit=5000";
-	
-	private String id; 
+	private long id; 
 	private FacebookConnect fb;
 	
 	public EventHandler(String id, String accessToken) {
-		this.id = id;
+		this.id = Long.parseLong(id);
 		fb = new FacebookConnect(accessToken);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Event getEvent(boolean full) {
-		Map<String, Object> result = fb.get(id, EVENT_PARAMS);
+		EventKey key = new EventKey(id, fb.getAccessToken());
+		Event event = LoaderFactory.getAccountLoader().load(key);
 		
-		Event event = new Event();
-		if (result.containsKey("cover")) {
-			event.setCover( (String)((Map<String, Object>)result.get("cover")).get("source") );
-		}
-		event.setDescription((String)result.get("description"));
+		long attendingCount = event.getAttendingCount();
+		long notRepliedCount = event.getNotRepliedCount();
+		long unsureCount = event.getUnsureCount();
 		
-		String endTime = (String)result.get("end_time");
-		if (endTime != null) {
-			event.setEndTime(DateUtils.parseDate(endTime.replace("T", " "), "yyyy-MM-dd hh:mm:ss"));
-		}
-		event.setId(Long.parseLong((String)result.get("id")));
-		event.setLocation((String)result.get("location"));
-		event.setName((String)result.get("name"));
-		event.setOwner(Long.parseLong((String)((Map<String, Object>)result.get("owner")).get("id")));
-		event.setPrivacy((String)result.get("privacy"));
+//		for (int i = 0; i < count; i+=1000) {
+//			Map<String, Object> users = event.getUsers(i);
+//			System.out.println(users.size());
+//			
+//			getUsers(users, EventUser.STATUS_INVITED, event.getId(), full);
+//			getUsers(users, EventUser.STATUS_ATTENDING, event.getId(), full);
+//		} 
 		
-		String startTime = (String)result.get("start_time");
-		if (startTime != null) {
-			event.setStartTime(DateUtils.parseDate(startTime.replace("T", " "), "yyyy-MM-dd hh:mm:ss"));
-		}
-		DAOFactory.getInstance().getEventDAO().insert(event);
-		
-		getUsers((Map<String, Object>)result.get(EventUser.STATUS_INVITED), EventUser.STATUS_INVITED, event.getId(), full);
-		getUsers((Map<String, Object>)result.get(EventUser.STATUS_ATTENDING), EventUser.STATUS_ATTENDING, event.getId(), full);
+		getUsers(EventUser.STATUS_ATTENDING, attendingCount, event, full);
+		getUsers(EventUser.STATUS_NOT_REPLIED, notRepliedCount, event, full);
+		getUsers(EventUser.STATUS_UNSURE, unsureCount, event, full);
 		
 		return event;
 	}
 	
+	private void getUsers(String status, long count, Event event, boolean full) {
+		for (int i = 0; i < count; i+=1000) {
+			Map<String, Object> users = event.getUsers(i, status);
+			System.out.println(users.size());
+			
+			getUsers(users, status, event.getId(), full);
+		} 
+	}
+	
 	@SuppressWarnings("unchecked")
-	private void getUsers(Map<String, Object> result, String status, long eventId, boolean full) {
-		Map<String, Object> users = (Map<String, Object>)result.get("data");
+	private void getUsers(Map<String, Object> users, String status, long eventId, boolean full) {
+//		Map<String, Object> users = (Map<String, Object>)result.get("data");
 		if (users != null) {
 			List<User> invitedUsers = new ArrayList<User>();
 			List<EventUser> invitedEventUsers = new ArrayList<EventUser>();
@@ -69,9 +66,16 @@ public class EventHandler {
 				
 				User user = new User();
 				user.setFirstName((String)userMap.get("first_name"));
-				user.setGender((String)userMap.get("gender"));
-				user.setId(Long.parseLong((String)userMap.get("id")));
+				user.setGender((String)userMap.get("sex"));
+				user.setId((Long)userMap.get("uid"));
 				user.setLastName((String)userMap.get("last_name"));
+				user.setName((String)userMap.get("name"));
+				if (userMap.get("birthday") != null) {
+					user.setBirthday(DateUtils.parseDate((String)userMap.get("birthday"), "MM/dd/yyyy"));
+				}
+				user.setEmail((String)userMap.get("email"));
+				user.setUsername((String)userMap.get("username"));
+				user.setLink((String)userMap.get("profile_url"));
 				
 				invitedUsers.add(user);
 				
@@ -87,16 +91,16 @@ public class EventHandler {
 			DAOFactory.getInstance().getEventUserDAO().insert(invitedEventUsers);
 		}
 		
-		Map<String, Object> paging = (Map<String, Object>)((Map<String, Object>)result).get("paging");//paginacao
-		if (full && paging != null && paging.containsKey("next")) {
-			String next = (String)paging.get("next");
-			
-			Map<String, Object> pagination = fb.get(next);
-			if (pagination != null) {
-				getUsers(pagination, status, eventId, full);
-			}
-			
-		}
+//		Map<String, Object> paging = (Map<String, Object>)((Map<String, Object>)result).get("paging");//paginacao
+//		if (full && paging != null && paging.containsKey("next")) {
+//			String next = (String)paging.get("next");
+//			
+//			Map<String, Object> pagination = fb.get(next);
+//			if (pagination != null) {
+//				getUsers(pagination, status, eventId, full);
+//			}
+//			
+//		}
 	}
 	
 	public static void main(String[] args) {

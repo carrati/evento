@@ -6,7 +6,7 @@ Hello world!!!
 <% if (fb != null) {%>
 	<%=  fb.getAccessToken() %>
 	<% for (Map.Entry<String, Object> entry : fb.getEvents().entrySet()) { %>
-			<a href="/event/<%= entry.getKey() %>"><%= ((Map<String, Object>)entry.getValue()).get("name") %></a><br/>
+			<a href="/event/<%= ((Map<String, Object>)entry.getValue()).get("eid") %>"><%= ((Map<String, Object>)entry.getValue()).get("name") %></a><br/><br/><br/>
 			-------------------------------------------------------------------
 			<br/>
 	<% } %>

@@ -21,15 +21,18 @@ public class MysqlEventDAO implements EventDAO {
 	
 	private static MysqlEventDAO instance;
 
-	private static String SELECT_STATEMENT = "select id, name, owner, description, cover, location, privacy, start_time, end_time from event ";
+	private static String SELECT_STATEMENT = "select id, name, owner, description, pic_cover, location, privacy, start_time, end_time, "
+			+ "pic_big, venue_latitude, venue_longitude, venue_city, venue_state, venue_country, venue_id, venue_street, venue_zip, all_members_count, "
+			+ "attending_count, not_replied_count, declined_count, unsure_count from event ";
 	
-	
-//	id, name, owner, description, cover, location, privacy, start_time, end_time, created_at, updated_at
-	
-	private static String INSERT_STATEMENT = "insert into event (id, name, owner, description, cover, location, privacy, start_time, end_time, created_at, updated_at) " +
-			" values (?, ?, ?, ?, ?, ?, ?, ?, ?, now(),now() ) "
-			+ "ON DUPLICATE KEY UPDATE name=values(name), owner=values(owner), description=values(description), cover=values(cover), location=values(location), privacy=values(privacy), start_time=values(start_time),	"
-			+ "end_time=values(end_time), updated_at=now()";
+	private static String INSERT_STATEMENT = "insert into event (id, name, owner, description, pic_cover, location, privacy, start_time, end_time, "
+			+ "pic_big, venue_latitude, venue_longitude, venue_city, venue_state, venue_country, venue_id, venue_street, venue_zip, all_members_count, "
+			+ "attending_count, not_replied_count, declined_count, unsure_count, created_at, updated_at) " +
+			" values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(),now() ) "
+			+ "ON DUPLICATE KEY UPDATE name=values(name), owner=values(owner), description=values(description), pic_cover=values(pic_cover), location=values(location), privacy=values(privacy), start_time=values(start_time),	"
+			+ "end_time=values(end_time), pic_big=values(pic_big), venue_latitude=values(venue_latitude), venue_longitude=values(venue_longitude), venue_city=values(venue_city), "
+			+ "venue_state=values(venue_state), venue_country=values(venue_country), venue_id=values(venue_id), venue_street=values(venue_street), venue_zip=values(venue_zip), all_members_count=values(all_members_count), "
+			+ "attending_count=values(attending_count), not_replied_count=values(not_replied_count), declined_count=values(declined_count), unsure_count=values(unsure_count), updated_at=now()";
 	
 			
 	private MysqlEventDAO() {
@@ -48,46 +51,9 @@ public class MysqlEventDAO implements EventDAO {
 	}
 	
 	public void insert(Event t) {
-		Connection conn = null;
-		PreparedStatement st = null;
-		
-		try {
-			conn = ConnectionManager.getConnection();
-			conn.setAutoCommit(true);
-			int pos = 0;
-
-			st = conn.prepareStatement(INSERT_STATEMENT);
-			
-			st.setLong(++pos, t.getId());
-			st.setString(++pos, t.getName());
-			st.setLong(++pos, t.getOwner());
-			st.setString(++pos, t.getDescription());
-			st.setString(++pos, t.getCover());
-			st.setString(++pos, t.getLocation());
-			st.setString(++pos, t.getPrivacy());
-			if (t.getStartTime() != null) {
-				st.setTimestamp(++pos, new Timestamp(((Date)  t.getStartTime()).getTime()));
-			} else {
-				st.setNull(++pos, Types.NULL);
-			}
-			if (t.getEndTime() != null) {
-				st.setTimestamp(++pos, new Timestamp(((Date)  t.getEndTime()).getTime()));
-			} else {
-				st.setNull(++pos, Types.NULL);
-			}
-			st.execute();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (conn != null) conn.close();
-				if (st != null) st.close();
-			} catch (SQLException sqle) {
-				sqle.printStackTrace();
-			}
-		}
-
+		List<Event> list = new ArrayList<Event>();
+		list.add(t);
+		insert(list);
 	}
 
 	public void insert(List<Event> list) {
@@ -109,7 +75,7 @@ public class MysqlEventDAO implements EventDAO {
 				pstmt.setString(++pos, t.getName());
 				pstmt.setLong(++pos, t.getOwner());
 				pstmt.setString(++pos, t.getDescription());
-				pstmt.setString(++pos, t.getCover());
+				pstmt.setString(++pos, t.getPicCover());
 				pstmt.setString(++pos, t.getLocation());
 				pstmt.setString(++pos, t.getPrivacy());
 				if (t.getStartTime() != null) {
@@ -122,6 +88,20 @@ public class MysqlEventDAO implements EventDAO {
 				} else {
 					pstmt.setNull(++pos, Types.NULL);
 				}
+				pstmt.setString(++pos, t.getPicBig());
+				pstmt.setDouble(++pos, t.getVenueLatitude());
+				pstmt.setDouble(++pos, t.getVenueLongitude());
+				pstmt.setString(++pos, t.getVenueCity());
+				pstmt.setString(++pos, t.getVenueState());
+				pstmt.setString(++pos, t.getVenueCountry());
+				pstmt.setLong(++pos, t.getVenueId());
+				pstmt.setString(++pos, t.getVenueStreet());
+				pstmt.setString(++pos, t.getVenueZip());
+				pstmt.setLong(++pos, t.getAllMembersCount());
+				pstmt.setLong(++pos, t.getAttendingCount());
+				pstmt.setLong(++pos, t.getNotRepliedCount());
+				pstmt.setLong(++pos, t.getDeclinedCount());
+				pstmt.setLong(++pos, t.getUnsureCount());
 				pstmt.addBatch();
 			}
 
@@ -178,8 +158,13 @@ public class MysqlEventDAO implements EventDAO {
 			if (conditions != null && !conditions.isEmpty()) {
 				str.append(" where ");
 				
-				for (String key : conditions.keySet()) {
-					str.append(key).append(key.contains("like") ? " ? and " : " = ? and ");
+				for (Map.Entry<String, Object> entry : conditions.entrySet()) {
+					String key = entry.getKey();
+					if (entry.getValue() == null) {
+						str.append(key).append(" and ");
+					} else {
+						str.append(key).append(key.contains("like") ? " ? and " : " = ? and ");//isso aqui tem que ser algo dinamico pra aceitar >=, <, like...
+					}
 				}
 				
 				str.append(" 1=1 ");
@@ -216,18 +201,32 @@ public class MysqlEventDAO implements EventDAO {
 			while (rs.next()) {
 				int pos = 0;
 				
-				Event user = new Event();
-				user.setId(rs.getInt(++pos));
-				user.setName(rs.getString(++pos));
-				user.setOwner(rs.getLong(++pos));
-				user.setDescription(rs.getString(++pos));
-				user.setCover(rs.getString(++pos));
-				user.setLocation(rs.getString(++pos));
-				user.setPrivacy(rs.getString(++pos));
-				user.setStartTime(rs.getTimestamp(++pos));
-				user.setEndTime(rs.getTimestamp(++pos));
+				Event event = new Event();
+				event.setId(rs.getLong(++pos));
+				event.setName(rs.getString(++pos));
+				event.setOwner(rs.getLong(++pos));
+				event.setDescription(rs.getString(++pos));
+				event.setPicCover(rs.getString(++pos));
+				event.setLocation(rs.getString(++pos));
+				event.setPrivacy(rs.getString(++pos));
+				event.setStartTime(rs.getTimestamp(++pos));
+				event.setEndTime(rs.getTimestamp(++pos));
+				event.setPicBig(rs.getString(++pos));
+				event.setVenueLatitude(rs.getDouble(++pos));
+				event.setVenueLongitude(rs.getDouble(++pos));
+				event.setVenueCity(rs.getString(++pos));
+				event.setVenueState(rs.getString(++pos));
+				event.setVenueCountry(rs.getString(++pos));
+				event.setVenueId(rs.getLong(++pos));
+				event.setVenueStreet(rs.getString(++pos));
+				event.setVenueZip(rs.getString(++pos));
+				event.setAllMembersCount(rs.getLong(++pos));
+				event.setAttendingCount(rs.getLong(++pos));
+				event.setNotRepliedCount(rs.getLong(++pos));
+				event.setDeclinedCount(rs.getLong(++pos));
+				event.setUnsureCount(rs.getLong(++pos));
 				
-				list.add(user);
+				list.add(event);
 			}
 			
 		} catch (Exception e) {

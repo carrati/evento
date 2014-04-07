@@ -39,6 +39,30 @@ public class FacebookConnectServlet extends HttpServlet {
 			throw new ServletException(new UnsupportedOperationException());
 		}
 	}
+	
+	//migrations
+	/**
+	 * ALTER TABLE `vaibombar`.`event` ADD COLUMN `all_members_count` INTEGER UNSIGNED NOT NULL DEFAULT 0 AFTER `name`;
+	 * ALTER TABLE `vaibombar`.`event` CHANGE COLUMN `cover` `pic_big` VARCHAR(500) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+	 ADD COLUMN `pic_cover` VARCHAR(500) NOT NULL AFTER `end_time`,
+	 ADD COLUMN `venue_latitute` VARCHAR(100) AFTER `pic_cover`,
+	 ADD COLUMN `venue_longitude` VARCHAR(100) AFTER `venue_latitude`,
+	 ADD COLUMN `venue_city` VARCHAR(300) AFTER `venue_longitude`,
+	 ADD COLUMN `venue_state` VARCHAR(300) AFTER `venue_city`,
+	 ADD COLUMN `venue_country` VARCHAR(300) AFTER `venue_state`,
+	 ADD COLUMN `venue_id` BIGINT UNSIGNED AFTER `venue_country`,
+	 ADD COLUMN `venue_street` VARCHAR(500) AFTER `venue_id`,
+	 ADD COLUMN `venue_zip` VARCHAR(45) AFTER `venue_street`;
+	 
+	 ALTER TABLE `vaibombar`.`event` MODIFY COLUMN `venue_latitude` DECIMAL(18,15) DEFAULT NULL,
+ MODIFY COLUMN `venue_longitude` DECIMAL(18,15) DEFAULT NULL;
+ 
+ ALTER TABLE `vaibombar`.`event` ADD COLUMN `attending_count` INT(10) UNSIGNED NOT NULL AFTER `all_members_count`,
+ ADD COLUMN `not_replied_count` INT(10) UNSIGNED NOT NULL AFTER `attending_count`,
+ ADD COLUMN `declined_count` INT(10) UNSIGNED NOT NULL AFTER `not_replied_count`,
+ ADD COLUMN `unsure_count` INT(10) UNSIGNED NOT NULL AFTER `declined_count`;
+
+	 */
 
 	@SuppressWarnings("unchecked")
 	public void doLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

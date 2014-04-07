@@ -7,7 +7,9 @@ public class EventUser {
 	private String status;
 	
 	public static final String STATUS_INVITED = "invited";
+	public static final String STATUS_NOT_REPLIED = "not_replied";
 	public static final String STATUS_ATTENDING = "attending";
+	public static final String STATUS_UNSURE = "unsure";
 	
 	private User user;
 	private Event event;

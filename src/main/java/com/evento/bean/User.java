@@ -66,7 +66,8 @@ public class User {
 	}
 
 	public void setEmail(String email) {
-		this.email = email.trim();
+		if (email != null)
+			this.email = email.trim();
 	}
 
 	public String getFirstName() {

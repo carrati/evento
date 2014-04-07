@@ -1,6 +1,7 @@
 package com.evento.facebook;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ public class FacebookConnect {
 		       .build();
             
 	public static final String ACCESS_TOKEN =
-			"CAAJDpChIsfwBAJKKhlZAE4G5co2ZCz4Jwjgpjantgj14JZB0JShmm40wkOM7T2TlhBKQDa6Uv1b6J4GxKhfJOlQP94BJvnyaBAbZBnqFz7oHyn60ABySK13Em60cx7iK1DWl3r3eIvQZAWrkWlyu3q0CjKpRMX44dkWCt4G6w2Wwzp4oYvw0t";
+			"CAACEdEose0cBAKbAHnaisiQgDZAUNWAb24D1VNggyZCC9SRBZCzBp4H0fZBsFMHJM2yeYAoFhw5z2KBGt3RjMpZAzgTZBXNAjEULFmbd9WZAyCZAMUvv1NHXZBdKaDWdUM12VA1jZBZCZAPxl2VSvMNZA1Gn7urPkYo6imZAKZCCv5GxXDuMBUZCZAtHlvbkZCXFAYSagTwXEZD";
 	
 	private static HttpClient httpClient = new HttpClient();
 	private static String[] permissionsValues = null;
@@ -60,7 +61,7 @@ public class FacebookConnect {
 	private static final String apprequests		= "apprequests";
 	private static final String books			= "books";
 	private static final String checkins		= "checkins";
-	private static final String events			= "events";
+//	private static final String events			= "events";
 	private static final String family			= "family";
 	private static final String feed			= "feed";
 	private static final String friendlists		= "friendlists";
@@ -103,9 +104,7 @@ public class FacebookConnect {
 	static {
 		permissionsValues = new String[] {
 			"email",
-			"offline_access",
 			"user_birthday",
-			"user_relationships",
 			"user_events",
 			"user_likes",
 			"publish_actions",
@@ -114,6 +113,7 @@ public class FacebookConnect {
 			"user_about_me",
 			"user_location",
 			"friends_events",
+			"friends_birthday",
 			"read_friendlists"
 		};
 	}
@@ -399,18 +399,11 @@ public class FacebookConnect {
 	}
 	
 //	events
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> getEvents() {
-		JSONObject jsonObj = getJson(events);
-		Map<String, Object> map = fillMap(jsonObj);
+		return getSql("SELECT eid, name, pic_big, start_time, end_time, location, description, creator, host, venue, pic_cover, privacy "
+				+ "FROM event WHERE eid IN (SELECT eid FROM event_member WHERE uid = me()) AND start_time >= now()");
 		
-		Map<String, Object> events = new HashMap<String, Object>();
-		for (Map.Entry<String, Object> entry : ((Map<String, Object>)map.get("data")).entrySet()) {
-			Map<String, Object> event = (Map<String, Object>)entry.getValue();
-			events.put((String)event.get("id"), event);
-		}
-		
-		return events;
+//		return map.containsKey("data") ? (Map<String, Object>)map.get("data") : null;
 	}
 	
 //	family
@@ -606,6 +599,27 @@ public class FacebookConnect {
 		return fillMap(jsonObj);
 	}
 	
+	public Map<String, Object> getSql(String sql, Object... params) {
+		StringBuilder sb = new StringBuilder(sql);
+		for (int i = 0; sb.indexOf("?") > -1 && params != null && i < params.length; i++) {
+			int indexOf = sb.indexOf("?");
+			sb.replace(indexOf, indexOf+1, params[i].toString());
+		}
+		return getSql(sb.toString());
+	}
+	
+	@SuppressWarnings({ "deprecation", "unchecked" })
+	public Map<String, Object> getSql(String sql) {
+		StringBuilder apiUrl = new StringBuilder(URL_API);
+		sql = URLEncoder.encode(sql);
+		apiUrl.append("fql?q=").append(sql);
+		apiUrl.append("&").append(PARAM_ACCESS_TOKEN).append(accessToken);
+
+		Map<String, Object> map = fillMap(returnJson(apiUrl.toString()));
+		
+		return map != null && map.containsKey("data") ? (Map<String, Object>)map.get("data") : null;
+	}
+	
 	public void publishWall(String message, String picture, String link, String name, String caption, String description,
 			String source, String place, String tags) {
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -647,21 +661,23 @@ public class FacebookConnect {
 	
 	public static void main(String[] args) {
 		FacebookConnect fb = new FacebookConnect(ACCESS_TOKEN);
-		Map<String, Object> profile = fb.getProfile();
+//		Map<String, Object> profile = fb.getProfile();
 
-		System.out.println(profile.get("name"));
-		System.out.println(fb.getProfile("/location/name"));
-		System.out.println(fb.getProfile("/location/name/id"));
-		System.out.println(fb.getProfile("/work[1]/employer/name"));
-		System.out.println(fb.getProfile("name"));
-		System.out.println(fb.getProfile("/favorite_teams[1]/name"));
-		System.out.println(fb.getPicture());
-		for (Map.Entry<String, Object> entry : fb.getEvents().entrySet()) {
-			System.out.println(entry.getKey());
-			System.out.println(entry.getValue());
-			System.out.println("=====================================================");
-		}
-		System.out.println(fb.get("300260490122930", "fields=cover,description,end_time,id,location,name,start_time,privacy,attending.fields(first_name,gender,interested_in,id,last_name)"));
+//		System.out.println(profile.get("name"));
+//		System.out.println(fb.getProfile("/location/name"));
+//		System.out.println(fb.getProfile("/location/name/id"));
+//		System.out.println(fb.getProfile("/work[1]/employer/name"));
+//		System.out.println(fb.getProfile("name"));
+//		System.out.println(fb.getProfile("/favorite_teams[1]/name"));
+//		System.out.println(fb.getPicture());
+//		for (Map.Entry<String, Object> entry : fb.getEvents().entrySet()) {
+//			System.out.println(entry.getKey());
+//			System.out.println(entry.getValue());
+//			System.out.println("=====================================================");
+//		}
+//		System.out.println(fb.get("598508553551730", "fields=cover,description,end_time,id,location,name,start_time,privacy,attending.fields(first_name,gender,interested_in,id,last_name)"));
+		
+		System.out.println(fb.getSql("SELECT eid, name, pic_big, start_time, end_time, location, description, creator, host, venue FROM event WHERE eid IN (SELECT eid FROM event_member WHERE uid = me()) AND start_time >= now()"));
 		
 //		String message, picture, link, name, caption, description, source, place, tags;
 //		message = null;
