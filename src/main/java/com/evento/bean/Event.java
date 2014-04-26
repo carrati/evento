@@ -46,7 +46,7 @@ public class Event {
 			result = (Map<String, Object>)result.get("data-1");
 		}
 		
-		if (result.containsKey("pic_cover")) {
+		if (result.containsKey("pic_cover") && result.get("pic_cover") != null) {
 			setPicCover( (String)((Map<String, Object>)result.get("pic_cover")).get("source") );
 		}
 		setDescription((String)result.get("description"));
