@@ -85,8 +85,10 @@ public class FacebookConnectServlet extends HttpServlet {
 				user.setFirstName((String)fb.getProfile().get("first_name"));
 				user.setLastName((String)fb.getProfile().get("last_name"));
 				user.setUsername((String)fb.getProfile().get("username"));
-				user.setLocation((String) ((Map<String, Object>)fb.getProfile().get("location")).get("name") );
-				user.setLocationId(Long.parseLong((String) ((Map<String, Object>)fb.getProfile().get("location")).get("id")) );
+				if (fb.getProfile().get("location") != null) {
+					user.setLocation((String) ((Map<String, Object>)fb.getProfile().get("location")).get("name") );
+					user.setLocationId(Long.parseLong((String) ((Map<String, Object>)fb.getProfile().get("location")).get("id")) );
+				}
 				user.setEmail((String)fb.getProfile().get("email"));
 				user.setId(Long.parseLong((String)fb.getProfile().get("id")));
 				user.setGender((String)fb.getProfile().get("gender"));
