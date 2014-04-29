@@ -38,7 +38,7 @@ public class EventServlet extends HttpServlet {
 		String path = request.getRequestURI();
 		String id = request.getRequestURI().substring(path.lastIndexOf("/")+1);
 		
-		Event event = new EventHandler(id, fb.getAccessToken()).getEvent(false);
+		Event event = new EventHandler(id, fb.getAccessToken()).getEvent();
 		
 		request.setAttribute("event", event);
 		request.getRequestDispatcher("/event.jsp").forward(request, response);

@@ -4,11 +4,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLDataException;
+
 public interface BasicDAO<T> {
 	
-	public void insert(T t);
+	public void insert(T t) throws MySQLDataException ;
 	
-	public void insert(List<T> list);
+	public void insert(List<T> list) throws MySQLDataException;
 	
 	public void update(T t);
 	

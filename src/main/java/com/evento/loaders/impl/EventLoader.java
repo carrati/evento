@@ -11,6 +11,7 @@ import com.evento.cache.CacheSource;
 import com.evento.db.DAOFactory;
 import com.evento.loaders.Loader;
 import com.evento.loaders.impl.EventLoader.EventKey;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLDataException;
 
 public class EventLoader implements Loader<EventKey, Event> {
 
@@ -60,6 +61,8 @@ public class EventLoader implements Loader<EventKey, Event> {
 					cache.put(event.getId(), event);
 			}
 		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (MySQLDataException e) {
 			e.printStackTrace();
 		}
 

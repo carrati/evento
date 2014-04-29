@@ -12,12 +12,15 @@ public class Event {
 	private String name;
 	private long owner;
 	private String description;
-	private String picCover;
 	private String location;
 	private String privacy;
 	private Date startTime;
 	private Date endTime;
+	private String pic;
+	private String picSmall;
+	private String picSquare;
 	private String picBig;
+	private String picCover;
 	private double venueLatitude;
 	private double venueLongitude;
 	private String venueCity;
@@ -40,7 +43,7 @@ public class Event {
 	@SuppressWarnings("unchecked")
 	public Event(String accessToken, long id) {
 		fb = new FacebookConnect(accessToken);
-		Map<String, Object> result = fb.getSql("SELECT eid, name, pic_big, start_time, end_time, location, description,"
+		Map<String, Object> result = fb.getSql("SELECT eid, name, pic_big, start_time, end_time, location, description, pic, pic_small, pic_square, "
 				+ " creator, host, venue, pic_cover, privacy, all_members_count, not_replied_count, attending_count, declined_count, not_replied_count, unsure_count FROM event WHERE eid = ? ", id);
 		if (result.containsKey("data-1")) {
 			result = (Map<String, Object>)result.get("data-1");
@@ -64,9 +67,17 @@ public class Event {
 		String startTime = (String)result.get("start_time");
 		if (startTime != null) {
 			setStartTime(DateUtils.parseDate(startTime.replace("T", " "), "yyyy-MM-dd hh:mm:ss"));
+			if (getStartTime() == null) {
+				setStartTime(DateUtils.parseDate(startTime.replace("T", " "), "yyyy-MM-dd"));
+			}
 		}
 		
 		setPicBig((String)result.get("pic_big"));
+		setPic((String)result.get("pic"));
+		setPicSmall((String)result.get("pic_small"));
+		setPicSquare((String)result.get("pic_square"));
+		
+		//adicionar novas fotos
 		
 		if (result.containsKey("venue")) {
 			setVenueLatitude((Double)((Map<String, Object>)result.get("venue")).get("latitude"));
@@ -85,6 +96,29 @@ public class Event {
 		setUnsureCount((Long)result.get("unsure_count"));
 	}
 	
+	public String getPic() {
+		return pic;
+	}
+
+	public void setPic(String pic) {
+		this.pic = pic;
+	}
+
+	public String getPicSmall() {
+		return picSmall;
+	}
+
+	public void setPicSmall(String picSmall) {
+		this.picSmall = picSmall;
+	}
+
+	public String getPicSquare() {
+		return picSquare;
+	}
+
+	public void setPicSquare(String picSquare) {
+		this.picSquare = picSquare;
+	}
 	public long getAttendingCount() {
 		return attendingCount;
 	}

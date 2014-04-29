@@ -16,21 +16,23 @@ import java.util.Map;
 import com.evento.bean.Event;
 import com.evento.db.ConnectionManager;
 import com.evento.db.interfaces.EventDAO;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLDataException;
 
 public class MysqlEventDAO implements EventDAO {
 	
 	private static MysqlEventDAO instance;
 
 	private static String SELECT_STATEMENT = "select id, name, owner, description, pic_cover, location, privacy, start_time, end_time, "
-			+ "pic_big, venue_latitude, venue_longitude, venue_city, venue_state, venue_country, venue_id, venue_street, venue_zip, all_members_count, "
+			+ "pic_big, pic, pic_small, pic_square, venue_latitude, venue_longitude, venue_city, venue_state, venue_country, venue_id, venue_street, venue_zip, all_members_count, "
 			+ "attending_count, not_replied_count, declined_count, unsure_count from event ";
 	
 	private static String INSERT_STATEMENT = "insert into event (id, name, owner, description, pic_cover, location, privacy, start_time, end_time, "
-			+ "pic_big, venue_latitude, venue_longitude, venue_city, venue_state, venue_country, venue_id, venue_street, venue_zip, all_members_count, "
+			+ "pic_big, pic, pic_small, pic_square, venue_latitude, venue_longitude, venue_city, venue_state, venue_country, venue_id, venue_street, venue_zip, all_members_count, "
 			+ "attending_count, not_replied_count, declined_count, unsure_count, created_at, updated_at) " +
-			" values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(),now() ) "
+			" values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(),now() ) "
 			+ "ON DUPLICATE KEY UPDATE name=values(name), owner=values(owner), description=values(description), pic_cover=values(pic_cover), location=values(location), privacy=values(privacy), start_time=values(start_time),	"
-			+ "end_time=values(end_time), pic_big=values(pic_big), venue_latitude=values(venue_latitude), venue_longitude=values(venue_longitude), venue_city=values(venue_city), "
+			+ "end_time=values(end_time), pic_big=values(pic_big), pic=values(pic), pic_small=values(pic_small), pic_square=values(pic_square), venue_latitude=values(venue_latitude), "
+			+ "venue_longitude=values(venue_longitude), venue_city=values(venue_city), "
 			+ "venue_state=values(venue_state), venue_country=values(venue_country), venue_id=values(venue_id), venue_street=values(venue_street), venue_zip=values(venue_zip), all_members_count=values(all_members_count), "
 			+ "attending_count=values(attending_count), not_replied_count=values(not_replied_count), declined_count=values(declined_count), unsure_count=values(unsure_count), updated_at=now()";
 	
@@ -50,13 +52,13 @@ public class MysqlEventDAO implements EventDAO {
 		return findBy(Collections.<String, Object>singletonMap("id", id));
 	}
 	
-	public void insert(Event t) {
+	public void insert(Event t) throws MySQLDataException {
 		List<Event> list = new ArrayList<Event>();
 		list.add(t);
 		insert(list);
 	}
 
-	public void insert(List<Event> list) {
+	public void insert(List<Event> list) throws MySQLDataException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
@@ -89,6 +91,10 @@ public class MysqlEventDAO implements EventDAO {
 					pstmt.setNull(++pos, Types.NULL);
 				}
 				pstmt.setString(++pos, t.getPicBig());
+				pstmt.setString(++pos, t.getPic());
+				pstmt.setString(++pos, t.getPicSmall());
+				pstmt.setString(++pos, t.getPicSquare());
+				
 				pstmt.setDouble(++pos, t.getVenueLatitude());
 				pstmt.setDouble(++pos, t.getVenueLongitude());
 				pstmt.setString(++pos, t.getVenueCity());
@@ -109,6 +115,7 @@ public class MysqlEventDAO implements EventDAO {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new MySQLDataException("erro ao salvar evento");
 		} finally {
 			try {
 				if (conn != null) conn.close();
@@ -212,6 +219,9 @@ public class MysqlEventDAO implements EventDAO {
 				event.setStartTime(rs.getTimestamp(++pos));
 				event.setEndTime(rs.getTimestamp(++pos));
 				event.setPicBig(rs.getString(++pos));
+				event.setPic(rs.getString(++pos));
+				event.setPicSmall(rs.getString(++pos));
+				event.setPicSquare(rs.getString(++pos));
 				event.setVenueLatitude(rs.getDouble(++pos));
 				event.setVenueLongitude(rs.getDouble(++pos));
 				event.setVenueCity(rs.getString(++pos));
